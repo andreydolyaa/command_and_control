@@ -17,6 +17,7 @@ class CLI {
       input: process.stdin,
       output: process.stdout,
     });
+    this.selectedClient = null;
   }
 
   start() {
@@ -24,12 +25,13 @@ class CLI {
     this.showMenu();
     console.log(`${COLORS.cyan}${CLI_HEADERS.DIVIDER}${COLORS.reset}\n`);
 
-    this.rl.setPrompt("> ");
+    this.updatePrompt();
     this.rl.prompt();
 
     this.rl.on("line", (line) => {
       const [command, ...args] = line.trim().split(" ");
       this.handleCommand(command, args);
+      this.updatePrompt();
       this.rl.prompt();
     });
 
@@ -38,42 +40,109 @@ class CLI {
     });
   }
 
+  updatePrompt() {
+    const basePrompt = "> ";
+    if (this.selectedClient) {
+      this.rl.setPrompt(`${COLORS.yellow}[${this.selectedClient.shortId}]${COLORS.reset}${basePrompt}`);
+    } else {
+      this.rl.setPrompt(basePrompt);
+    }
+  }
+
   handleCommand(command, args) {
-    switch (command) {
-      case CLI_COMMANDS.LIST.cmd:
-        this.handleList();
-        break;
-      case CLI_COMMANDS.INFO.cmd.split(" ")[0]:
-        this.handleDetails(args[0]);
-        break;
-      case CLI_COMMANDS.SEND.cmd.split(" ")[0]:
-        this.handleSend(args.join(" "));
-        break;
-      case CLI_COMMANDS.SHELL.cmd.split(" ")[0]:
-        this.handleShell(args[0], args.slice(1).join(" "));
-        break;
-      case CLI_COMMANDS.CMD.cmd.split(" ")[0]:
-        this.handleShell(args[0], args.slice(1).join(" "));
-        break;
-      case CLI_COMMANDS.EXIT.cmd:
-        this.handleExit();
-        break;
-      case CLI_COMMANDS.HELP.cmd:
-        this.showMenu();
-        break;
-      default:
-        console.log(CLI_MESSAGES.INVALID_COMMAND);
+    if (this.selectedClient) {
+      switch (command) {
+        case CLI_COMMANDS.INFO.cmd.split(" ")[0]:
+          this.handleDetails(this.selectedClient.id);
+          break;
+        case CLI_COMMANDS.SHELL.cmd.split(" ")[0]:
+        case CLI_COMMANDS.CMD.cmd.split(" ")[0]:
+          this.handleShell(this.selectedClient.id, args.join(" "));
+          break;
+        case CLI_COMMANDS.UNSELECT.cmd:
+          this.selectedClient = null;
+          console.log(CLI_MESSAGES.CLIENT_UNSELECTED);
+          break;
+        case CLI_COMMANDS.LIST.cmd:
+          this.handleList();
+          break;
+        case CLI_COMMANDS.SEND.cmd.split(" ")[0]:
+          this.handleSend(args.join(" "));
+          break;
+        case CLI_COMMANDS.EXIT.cmd:
+          this.handleExit();
+          break;
+        case CLI_COMMANDS.HELP.cmd:
+          this.showMenu();
+          break;
+        default:
+          console.log(CLI_MESSAGES.INVALID_COMMAND);
+      }
+    } else {
+      switch (command) {
+        case CLI_COMMANDS.LIST.cmd:
+          this.handleList();
+          break;
+        case CLI_COMMANDS.SELECT.cmd.split(" ")[0]:
+          this.handleSelect(args[0]);
+          break;
+        case CLI_COMMANDS.SEND.cmd.split(" ")[0]:
+          this.handleSend(args.join(" "));
+          break;
+        case CLI_COMMANDS.EXIT.cmd:
+          this.handleExit();
+          break;
+        case CLI_COMMANDS.HELP.cmd:
+          this.showMenu();
+          break;
+        case CLI_COMMANDS.INFO.cmd:
+        case CLI_COMMANDS.SHELL.cmd:
+        case CLI_COMMANDS.CMD.cmd:
+          console.log(CLI_MESSAGES.NO_CLIENT_SELECTED);
+          break;
+        default:
+          console.log(CLI_MESSAGES.INVALID_COMMAND);
+      }
     }
   }
 
   showMenu() {
     console.log(`\n${COLORS.blue}${CLI_HEADERS.MENU}${COLORS.reset}\n`);
-    Object.values(CLI_COMMANDS).forEach(({ cmd, desc }) => {
+    const commands = Object.values(CLI_COMMANDS).filter(({ cmd }) => {
+      if (this.selectedClient) {
+        return cmd !== "select <client_id>";
+      } else {
+        return !["info", "shell <command>", "cmd <command>", "back"].includes(cmd);
+      }
+    });
+
+    commands.forEach(({ cmd, desc }) => {
       console.log(
         `${COLORS.yellow}  ${cmd.padEnd(18)}${COLORS.reset}	- ${desc}`
       );
     });
     console.log("");
+  }
+
+  handleSelect(clientId) {
+    if (!clientId) {
+      console.log(CLI_MESSAGES.CLIENT_ID_REQUIRED);
+      return;
+    }
+
+    const clients = this.wsServer.getClients();
+    const client = clients.find(
+      (c) => c.id === clientId || c.shortId === clientId.toUpperCase()
+    );
+
+    if (!client) {
+      console.log(CLI_MESSAGES.CLIENT_NOT_FOUND(clientId));
+      return;
+    }
+
+    this.selectedClient = client;
+    console.log(`${COLORS.green}${CLI_MESSAGES.CLIENT_SELECTED(client.shortId)}${COLORS.reset}`);
+    this.showMenu();
   }
 
   handleList() {
@@ -92,8 +161,10 @@ class CLI {
     );
     clients.forEach((client) => {
       const [hostname, username] = client.id.split("-");
+      const isSelected = this.selectedClient && this.selectedClient.shortId === client.shortId;
+      const idColor = isSelected ? COLORS.green : COLORS.reset;
       console.log(
-        `${COLORS.green}${client.shortId.padEnd(6)}${COLORS.reset} | ` +
+        `${idColor}${client.shortId.padEnd(6)}${COLORS.reset} | ` +
           `${hostname.padEnd(12)}  | ` +
           `${username.padEnd(10)}  | ` +
           `${client.ip.padEnd(14)} | ` +
@@ -104,11 +175,6 @@ class CLI {
   }
 
   handleDetails(clientId) {
-    if (!clientId) {
-      console.log(CLI_MESSAGES.CLIENT_ID_REQUIRED);
-      return;
-    }
-
     const clients = this.wsServer.getClientDetails();
     const client = clients.find(
       (c) => c.id === clientId || c.shortId === clientId.toUpperCase()
@@ -158,28 +224,16 @@ class CLI {
   }
 
   handleShell(clientId, command) {
-    if (!clientId || !command) {
+    if (!command) {
       console.log(CLI_MESSAGES.SHELL_USAGE);
       return;
     }
 
-    const clients = this.wsServer.getClients();
-    const client = clients.find(
-      (c) => c.id === clientId || c.shortId === clientId.toUpperCase()
-    );
-
-    if (!client) {
-      console.log(CLI_MESSAGES.CLIENT_NOT_FOUND(clientId));
-      return;
-    }
-
-    this.wsServer.sendToClient(client.id, {
+    this.wsServer.sendToClient(clientId, {
       type: "shell",
-      command: command,
+      command: command
     });
-    console.log(
-      `${COLORS.green}Shell command dispatched to client ${COLORS.yellow}${client.shortId}${COLORS.reset}\n`
-    );
+    console.log(`${COLORS.green}Shell command dispatched to client ${COLORS.yellow}${this.selectedClient.shortId}${COLORS.reset}`);
   }
 
   handleExit() {

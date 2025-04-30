@@ -20,21 +20,29 @@ export const CLI_COMMANDS = {
 		cmd: "list",
 		desc: "Display active client sessions"
 	},
+	SELECT: {
+		cmd: "select <client_id>",
+		desc: "Select a client to interact with"
+	},
 	INFO: {
-		cmd: "info <client_id>",
-		desc: "Retrieve comprehensive system specifications for target client"
+		cmd: "info",
+		desc: "Retrieve comprehensive system specifications for selected client"
 	},
 	SEND: {
 		cmd: "send <message>",
 		desc: "Broadcast secure message to all authenticated clients"
 	},
 	SHELL: {
-		cmd: "shell <id> <cmd>",
-		desc: "Execute shell command on target client"
+		cmd: "shell <command>",
+		desc: "Execute shell command on selected client"
 	},
 	CMD: {
-		cmd: "cmd <id> <cmd>",
+		cmd: "cmd <command>",
 		desc: "Alias for shell command"
+	},
+	UNSELECT: {
+		cmd: "back",
+		desc: "Exit client selection mode"
 	},
 	EXIT: {
 		cmd: "exit",
@@ -62,13 +70,16 @@ export const TABLE_HEADERS = {
 
 export const CLI_MESSAGES = {
 	NO_CLIENTS: "No active client sessions detected",
-	CLIENT_ID_REQUIRED: "Client identifier required. Usage: info <client_id>",
+	CLIENT_ID_REQUIRED: "Client identifier required. Usage: select <client_id>",
 	CLIENT_NOT_FOUND: (id) => `Target client "${id}" not found in active sessions.`,
 	MESSAGE_REQUIRED: "Message payload required for transmission",
 	BROADCAST_SUCCESS: "Secure message broadcast initiated",
-	SHELL_USAGE: "Usage: shell <client_id> <command>",
+	SHELL_USAGE: "Usage: shell <command>",
 	EXIT_MESSAGE: "Initiating secure server termination sequence...",
-	INVALID_COMMAND: "Invalid command. Type '?' to view available commands."
+	INVALID_COMMAND: "Invalid command. Type '?' to view available commands.",
+	NO_CLIENT_SELECTED: "No client selected. Use 'select <client_id>' first.",
+	CLIENT_SELECTED: (id) => `Now interacting with client ${id}`,
+	CLIENT_UNSELECTED: "Exited client selection mode"
 };
 
 export const TABLE_FORMATS = {

@@ -111,8 +111,8 @@ class WSServer {
       console.log(data.output);
     }
     
-    console.log(""); // Empty line for better readability
-    process.stdout.write("> "); // Display the prompt after command output
+    console.log(""); // Empty line for readability
+    process.stdout.write(`${colors.yellow}[${clientInfo.shortId}]${colors.reset}> `); // Display the client-specific prompt
   }
 
   handleClose(ws) {

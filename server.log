@@ -747,3 +747,54 @@
 [2025-04-30T11:37:08.666Z] [INFO] New client session established from ::1 (Session ID: F5EC)
 [2025-04-30T11:37:08.667Z] [INFO] Received message type: identify
 [2025-04-30T11:37:08.667Z] [SUCCESS] Client "mac-andrey" (F5EC) authenticated from ::1 (Darwin, arm64, darwin)
+[2025-04-30T11:41:55.494Z] [SUCCESS] http server running on port 3000
+[2025-04-30T11:41:55.495Z] [SUCCESS] Secure WebSocket server initialized and attached to HTTP server
+[2025-04-30T11:41:55.597Z] [SUCCESS] servers started successfully
+[2025-04-30T11:41:57.426Z] [INFO] New client session established from ::1 (Session ID: F93E)
+[2025-04-30T11:41:57.428Z] [INFO] Received message type: identify
+[2025-04-30T11:41:57.428Z] [SUCCESS] Client "mac-andrey" (F93E) authenticated from ::1 (Darwin, arm64, darwin)
+[2025-04-30T11:43:05.537Z] [SUCCESS] http server running on port 3000
+[2025-04-30T11:43:05.539Z] [SUCCESS] Secure WebSocket server initialized and attached to HTTP server
+[2025-04-30T11:43:05.641Z] [SUCCESS] servers started successfully
+[2025-04-30T11:43:07.460Z] [INFO] New client session established from ::1 (Session ID: 581F)
+[2025-04-30T11:43:07.460Z] [INFO] Received message type: identify
+[2025-04-30T11:43:07.460Z] [SUCCESS] Client "mac-andrey" (581F) authenticated from ::1 (Darwin, arm64, darwin)
+[2025-04-30T11:44:27.332Z] [SUCCESS] http server running on port 3000
+[2025-04-30T11:44:27.333Z] [SUCCESS] Secure WebSocket server initialized and attached to HTTP server
+[2025-04-30T11:44:27.435Z] [SUCCESS] servers started successfully
+[2025-04-30T11:44:29.262Z] [INFO] New client session established from ::1 (Session ID: F560)
+[2025-04-30T11:44:29.263Z] [INFO] Received message type: identify
+[2025-04-30T11:44:29.263Z] [SUCCESS] Client "mac-andrey" (F560) authenticated from ::1 (Darwin, arm64, darwin)
+[2025-04-30T11:49:02.857Z] [SUCCESS] http server running on port 3000
+[2025-04-30T11:49:02.859Z] [SUCCESS] Secure WebSocket server initialized and attached to HTTP server
+[2025-04-30T11:49:02.959Z] [SUCCESS] servers started successfully
+[2025-04-30T11:49:04.785Z] [INFO] New client session established from ::1 (Session ID: E487)
+[2025-04-30T11:49:04.787Z] [INFO] Received message type: identify
+[2025-04-30T11:49:04.787Z] [SUCCESS] Client "mac-andrey" (E487) authenticated from ::1 (Darwin, arm64, darwin)
+[2025-04-30T11:49:42.120Z] [INFO] Received message type: shell_response
+[2025-04-30T11:50:03.443Z] [SUCCESS] http server running on port 3000
+[2025-04-30T11:50:03.444Z] [SUCCESS] Secure WebSocket server initialized and attached to HTTP server
+[2025-04-30T11:50:03.545Z] [SUCCESS] servers started successfully
+[2025-04-30T11:50:05.375Z] [INFO] New client session established from ::1 (Session ID: 4227)
+[2025-04-30T11:50:05.377Z] [INFO] Received message type: identify
+[2025-04-30T11:50:05.377Z] [SUCCESS] Client "mac-andrey" (4227) authenticated from ::1 (Darwin, arm64, darwin)
+[2025-04-30T11:50:39.148Z] [SUCCESS] http server running on port 3000
+[2025-04-30T11:50:39.150Z] [SUCCESS] Secure WebSocket server initialized and attached to HTTP server
+[2025-04-30T11:50:39.251Z] [SUCCESS] servers started successfully
+[2025-04-30T11:50:41.077Z] [INFO] New client session established from ::1 (Session ID: E713)
+[2025-04-30T11:50:41.078Z] [INFO] Received message type: identify
+[2025-04-30T11:50:41.078Z] [SUCCESS] Client "mac-andrey" (E713) authenticated from ::1 (Darwin, arm64, darwin)
+[2025-04-30T11:50:51.784Z] [SUCCESS] http server running on port 3000
+[2025-04-30T11:50:51.785Z] [SUCCESS] Secure WebSocket server initialized and attached to HTTP server
+[2025-04-30T11:50:51.887Z] [SUCCESS] servers started successfully
+[2025-04-30T11:50:53.714Z] [INFO] New client session established from ::1 (Session ID: 13A8)
+[2025-04-30T11:50:53.715Z] [INFO] Received message type: identify
+[2025-04-30T11:50:53.715Z] [SUCCESS] Client "mac-andrey" (13A8) authenticated from ::1 (Darwin, arm64, darwin)
+[2025-04-30T11:51:03.296Z] [INFO] Received message type: shell_response
+[2025-04-30T11:51:22.279Z] [INFO] Received message type: shell_response
+[2025-04-30T11:51:30.281Z] [SUCCESS] http server running on port 3000
+[2025-04-30T11:51:30.283Z] [SUCCESS] Secure WebSocket server initialized and attached to HTTP server
+[2025-04-30T11:51:30.383Z] [SUCCESS] servers started successfully
+[2025-04-30T11:51:32.179Z] [INFO] New client session established from ::1 (Session ID: 1E03)
+[2025-04-30T11:51:32.180Z] [INFO] Received message type: identify
+[2025-04-30T11:51:32.180Z] [SUCCESS] Client "mac-andrey" (1E03) authenticated from ::1 (Darwin, arm64, darwin)
