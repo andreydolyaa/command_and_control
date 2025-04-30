@@ -1,13 +1,14 @@
 import readline from "readline";
 import Logger from "./logger.js";
-
-const colors = {
-  reset: "\x1b[0m",
-  blue: "\x1b[34m",
-  cyan: "\x1b[36m",
-  yellow: "\x1b[33m",
-  green: "\x1b[32m",
-};
+import {
+  COLORS,
+  CLI_HEADERS,
+  CLI_COMMANDS,
+  TABLE_HEADERS,
+  CLI_MESSAGES,
+  TABLE_FORMATS,
+  PROPERTY_LABELS,
+} from "./constants.js";
 
 class CLI {
   constructor(wsServer) {
@@ -19,13 +20,9 @@ class CLI {
   }
 
   start() {
-    console.log(
-      `\n${colors.cyan}============================ SECURE SERVER CONTROL INTERFACE ============================${colors.reset}`
-    );
+    console.log(`\n${COLORS.cyan}${CLI_HEADERS.INTERFACE}${COLORS.reset}`);
     this.showMenu();
-    console.log(
-      `${colors.cyan}=========================================================================================${colors.reset}\n`
-    );
+    console.log(`${COLORS.cyan}${CLI_HEADERS.DIVIDER}${COLORS.reset}\n`);
 
     this.rl.setPrompt("> ");
     this.rl.prompt();
@@ -43,76 +40,60 @@ class CLI {
 
   handleCommand(command, args) {
     switch (command) {
-      case "list":
+      case CLI_COMMANDS.LIST.cmd:
         this.handleList();
         break;
-      case "info":
+      case CLI_COMMANDS.INFO.cmd.split(" ")[0]:
         this.handleDetails(args[0]);
         break;
-      case "send":
+      case CLI_COMMANDS.SEND.cmd.split(" ")[0]:
         this.handleSend(args.join(" "));
         break;
-      case "shell":
+      case CLI_COMMANDS.SHELL.cmd.split(" ")[0]:
         this.handleShell(args[0], args.slice(1).join(" "));
         break;
-      case "cmd":
+      case CLI_COMMANDS.CMD.cmd.split(" ")[0]:
         this.handleShell(args[0], args.slice(1).join(" "));
         break;
-      case "exit":
+      case CLI_COMMANDS.EXIT.cmd:
         this.handleExit();
         break;
-      case "?":
+      case CLI_COMMANDS.HELP.cmd:
         this.showMenu();
         break;
       default:
-        console.log("Invalid command. Type '?' to view available commands.");
+        console.log(CLI_MESSAGES.INVALID_COMMAND);
     }
   }
 
   showMenu() {
-    console.log(`\n${colors.blue}Available Commands:${colors.reset}\n`);
-    console.log(
-      `${colors.yellow}  list${colors.reset}              	- Display active client sessions`
-    );
-    console.log(
-      `${colors.yellow}  info <client_id>${colors.reset}    	- Retrieve comprehensive system specifications for target client`
-    );
-    console.log(
-      `${colors.yellow}  send <message>${colors.reset}    	- Broadcast secure message to all authenticated clients`
-    );
-    console.log(
-      `${colors.yellow}  shell <id> <cmd>${colors.reset}  	- Execute shell command on target client`
-    );
-    console.log(
-      `${colors.yellow}  cmd <id> <cmd>${colors.reset}    	- Alias for shell command`
-    );
-    console.log(
-      `${colors.yellow}  exit${colors.reset}              	- Terminate server session`
-    );
-    console.log(
-      `${colors.yellow}  ?${colors.reset}                 	- Display command interface menu`
-    );
+    console.log(`\n${COLORS.blue}${CLI_HEADERS.MENU}${COLORS.reset}\n`);
+    Object.values(CLI_COMMANDS).forEach(({ cmd, desc }) => {
+      console.log(
+        `${COLORS.yellow}  ${cmd.padEnd(18)}${COLORS.reset}	- ${desc}`
+      );
+    });
     console.log("");
   }
 
   handleList() {
     const clients = this.wsServer.getClientDetails();
     if (clients.length === 0) {
-      console.log("No active client sessions detected");
+      console.log(CLI_MESSAGES.NO_CLIENTS);
       return;
     }
 
-    console.log(`\n${colors.blue}Active Client Sessions:${colors.reset}\n`);
     console.log(
-      `${colors.cyan}ID     | Hostname      | Username    | IP             | MAC               ${colors.reset}`
+      `\n${COLORS.blue}${CLI_HEADERS.CLIENT_SESSIONS}${COLORS.reset}\n`
     );
+    console.log(`${COLORS.cyan}${TABLE_FORMATS.CLIENTS_HEADER}${COLORS.reset}`);
     console.log(
-      `${colors.cyan}-------+---------------|-------------|----------------+-------------------${colors.reset}`
+      `${COLORS.cyan}${TABLE_FORMATS.CLIENTS_DIVIDER}${COLORS.reset}`
     );
     clients.forEach((client) => {
       const [hostname, username] = client.id.split("-");
       console.log(
-        `${colors.green}${client.shortId.padEnd(6)}${colors.reset} | ` +
+        `${COLORS.green}${client.shortId.padEnd(6)}${COLORS.reset} | ` +
           `${hostname.padEnd(12)}  | ` +
           `${username.padEnd(10)}  | ` +
           `${client.ip.padEnd(14)} | ` +
@@ -124,7 +105,7 @@ class CLI {
 
   handleDetails(clientId) {
     if (!clientId) {
-      console.log("Client identifier required. Usage: info <client_id>\n");
+      console.log(CLI_MESSAGES.CLIENT_ID_REQUIRED);
       return;
     }
 
@@ -134,45 +115,51 @@ class CLI {
     );
 
     if (!client) {
-      console.log(`Target client "${clientId}" not found in active sessions.`);
+      console.log(CLI_MESSAGES.CLIENT_NOT_FOUND(clientId));
       return;
     }
 
     const [hostname, username] = client.id.split("-");
-    console.log(`\n${colors.blue}Target Client Details:${colors.reset}\n`);
-    console.log(`${colors.cyan}Property    | Value${colors.reset}`);
-    console.log(`${colors.cyan}------------+${"-".repeat(50)}${colors.reset}`);
     console.log(
-      `Session ID  | ${colors.green}${client.shortId}${colors.reset}`
+      `\n${COLORS.blue}${CLI_HEADERS.CLIENT_DETAILS}${COLORS.reset}\n`
     );
-    console.log(`Hostname    | ${hostname}`);
-    console.log(`Username    | ${username}`);
-    console.log(`IP Address  | ${client.ip}`);
-    console.log(`MAC Address | ${client.mac}`);
-    console.log(`Connected   | ${client.connectedAt}`);
-    console.log(`OS          | ${client.os}`);
-    console.log(`Platform    | ${client.platform}`);
-    console.log(`CPU Arch    | ${client.arch}`);
-    console.log(`Memory      | ${client.memory}`);
-    console.log(`Processor   | ${client.cpu}`);
+    console.log(
+      `${COLORS.cyan}${TABLE_HEADERS.CLIENT_DETAILS.PROPERTY}    | ${TABLE_HEADERS.CLIENT_DETAILS.VALUE}${COLORS.reset}`
+    );
+    console.log(
+      `${COLORS.cyan}${TABLE_FORMATS.DETAILS_DIVIDER}${COLORS.reset}`
+    );
+    console.log(
+      `${PROPERTY_LABELS.SESSION_ID}  | ${COLORS.green}${client.shortId}${COLORS.reset}`
+    );
+    console.log(`${PROPERTY_LABELS.HOSTNAME}    | ${hostname}`);
+    console.log(`${PROPERTY_LABELS.USERNAME}    | ${username}`);
+    console.log(`${PROPERTY_LABELS.IP_ADDRESS}  | ${client.ip}`);
+    console.log(`${PROPERTY_LABELS.MAC_ADDRESS} | ${client.mac}`);
+    console.log(`${PROPERTY_LABELS.CONNECTED}   | ${client.connectedAt}`);
+    console.log(`${PROPERTY_LABELS.OS}          | ${client.os}`);
+    console.log(`${PROPERTY_LABELS.PLATFORM}    | ${client.platform}`);
+    console.log(`${PROPERTY_LABELS.CPU_ARCH}    | ${client.arch}`);
+    console.log(`${PROPERTY_LABELS.MEMORY}      | ${client.memory}`);
+    console.log(`${PROPERTY_LABELS.PROCESSOR}   | ${client.cpu}`);
     console.log("");
   }
 
   handleSend(message) {
     if (!message) {
-      console.log("Message payload required for transmission");
+      console.log(CLI_MESSAGES.MESSAGE_REQUIRED);
       return;
     }
 
     this.wsServer.broadcast(message);
     console.log(
-      `${colors.green}Secure message broadcast initiated${colors.reset}`
+      `${COLORS.green}${CLI_MESSAGES.BROADCAST_SUCCESS}${COLORS.reset}`
     );
   }
 
   handleShell(clientId, command) {
     if (!clientId || !command) {
-      console.log("Usage: shell <client_id> <command>\n");
+      console.log(CLI_MESSAGES.SHELL_USAGE);
       return;
     }
 
@@ -182,9 +169,7 @@ class CLI {
     );
 
     if (!client) {
-      console.log(
-        `Target client "${clientId}" not found in active sessions.\n`
-      );
+      console.log(CLI_MESSAGES.CLIENT_NOT_FOUND(clientId));
       return;
     }
 
@@ -193,14 +178,12 @@ class CLI {
       command: command,
     });
     console.log(
-      `${colors.green}Shell command dispatched to client ${colors.yellow}${client.shortId}${colors.reset}\n`
+      `${COLORS.green}Shell command dispatched to client ${COLORS.yellow}${client.shortId}${COLORS.reset}\n`
     );
   }
 
   handleExit() {
-    console.log(
-      `${colors.yellow}Initiating secure server termination sequence...${colors.reset}`
-    );
+    console.log(`${COLORS.yellow}${CLI_MESSAGES.EXIT_MESSAGE}${COLORS.reset}`);
     this.rl.close();
   }
 }
