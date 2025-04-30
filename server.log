@@ -798,3 +798,198 @@
 [2025-04-30T11:51:32.179Z] [INFO] New client session established from ::1 (Session ID: 1E03)
 [2025-04-30T11:51:32.180Z] [INFO] Received message type: identify
 [2025-04-30T11:51:32.180Z] [SUCCESS] Client "mac-andrey" (1E03) authenticated from ::1 (Darwin, arm64, darwin)
+[2025-04-30T17:23:35.217Z] [SUCCESS] http server running on port 3000
+[2025-04-30T17:23:35.218Z] [SUCCESS] Secure WebSocket server initialized and attached to HTTP server
+[2025-04-30T17:23:35.319Z] [SUCCESS] servers started successfully
+[2025-04-30T17:23:36.192Z] [INFO] New client session established from ::1 (Session ID: 7C0C)
+[2025-04-30T17:23:36.197Z] [INFO] Received message type: identify
+[2025-04-30T17:23:36.197Z] [SUCCESS] Client "mac-andrey" (7C0C) authenticated from ::1 (Darwin, arm64, darwin)
+[2025-04-30T17:29:00.501Z] [SUCCESS] http server running on port 3000
+[2025-04-30T17:29:00.503Z] [SUCCESS] Secure WebSocket server initialized and attached to HTTP server
+[2025-04-30T17:29:00.604Z] [SUCCESS] servers started successfully
+[2025-04-30T17:29:02.408Z] [INFO] New client session established from ::1 (Session ID: 3FC7)
+[2025-04-30T17:29:02.409Z] [INFO] Received message type: identify
+[2025-04-30T17:29:02.409Z] [SUCCESS] Client "mac-andrey" (3FC7) authenticated from ::1 (Darwin, arm64, darwin)
+[2025-04-30T17:29:26.282Z] [SUCCESS] http server running on port 3000
+[2025-04-30T17:29:26.283Z] [SUCCESS] Secure WebSocket server initialized and attached to HTTP server
+[2025-04-30T17:29:26.384Z] [SUCCESS] servers started successfully
+[2025-04-30T17:29:28.192Z] [INFO] New client session established from ::1 (Session ID: 8ED8)
+[2025-04-30T17:29:28.193Z] [INFO] Received message type: identify
+[2025-04-30T17:29:28.193Z] [SUCCESS] Client "mac-andrey" (8ED8) authenticated from ::1 (Darwin, arm64, darwin)
+[2025-04-30T17:30:51.002Z] [SUCCESS] http server running on port 3000
+[2025-04-30T17:30:51.003Z] [SUCCESS] Secure WebSocket server initialized and attached to HTTP server
+[2025-04-30T17:30:51.103Z] [SUCCESS] servers started successfully
+[2025-04-30T17:30:52.907Z] [INFO] New client session established from ::1 (Session ID: 62D3)
+[2025-04-30T17:30:52.908Z] [INFO] Received message type: identify
+[2025-04-30T17:30:52.908Z] [SUCCESS] Client "mac-andrey" (62D3) authenticated from ::1 (Darwin, arm64, darwin)
+[2025-04-30T17:31:12.243Z] [SUCCESS] http server running on port 3000
+[2025-04-30T17:31:12.244Z] [SUCCESS] Secure WebSocket server initialized and attached to HTTP server
+[2025-04-30T17:31:12.346Z] [SUCCESS] servers started successfully
+[2025-04-30T17:31:14.173Z] [INFO] New client session established from ::1 (Session ID: D5CE)
+[2025-04-30T17:31:14.175Z] [INFO] Received message type: identify
+[2025-04-30T17:31:14.175Z] [SUCCESS] Client "mac-andrey" (D5CE) authenticated from ::1 (Darwin, arm64, darwin)
+[2025-04-30T17:31:38.973Z] [INFO] Received message type: shell_response
+[2025-04-30T17:31:45.266Z] [INFO] Received message type: shell_response
+[2025-04-30T17:31:50.302Z] [INFO] Received message type: shell_response
+[2025-04-30T17:33:15.134Z] [SUCCESS] http server running on port 3000
+[2025-04-30T17:33:15.135Z] [SUCCESS] Secure WebSocket server initialized and attached to HTTP server
+[2025-04-30T17:33:15.236Z] [SUCCESS] servers started successfully
+[2025-04-30T17:33:17.011Z] [INFO] New client session established from ::1 (Session ID: 1F0C)
+[2025-04-30T17:33:17.012Z] [INFO] Received message type: identify
+[2025-04-30T17:33:17.012Z] [SUCCESS] Client "mac-andrey" (1F0C) authenticated from ::1 (Darwin, arm64, darwin)
+[2025-04-30T17:34:13.691Z] [SUCCESS] http server running on port 3000
+[2025-04-30T17:34:13.692Z] [SUCCESS] Secure WebSocket server initialized and attached to HTTP server
+[2025-04-30T17:34:13.793Z] [SUCCESS] servers started successfully
+[2025-04-30T17:34:15.621Z] [INFO] New client session established from ::1 (Session ID: 2847)
+[2025-04-30T17:34:15.622Z] [INFO] Received message type: identify
+[2025-04-30T17:34:15.622Z] [SUCCESS] Client "mac-andrey" (2847) authenticated from ::1 (Darwin, arm64, darwin)
+[2025-04-30T17:34:41.223Z] [SUCCESS] http server running on port 3000
+[2025-04-30T17:34:41.225Z] [SUCCESS] Secure WebSocket server initialized and attached to HTTP server
+[2025-04-30T17:34:41.327Z] [SUCCESS] servers started successfully
+[2025-04-30T17:34:43.093Z] [INFO] New client session established from ::1 (Session ID: 4B66)
+[2025-04-30T17:34:43.095Z] [INFO] Received message type: identify
+[2025-04-30T17:34:43.095Z] [SUCCESS] Client "mac-andrey" (4B66) authenticated from ::1 (Darwin, arm64, darwin)
+[2025-04-30T17:35:27.202Z] [SUCCESS] http server running on port 3000
+[2025-04-30T17:35:27.203Z] [SUCCESS] Secure WebSocket server initialized and attached to HTTP server
+[2025-04-30T17:35:27.305Z] [SUCCESS] servers started successfully
+[2025-04-30T17:35:29.126Z] [INFO] New client session established from ::1 (Session ID: 5996)
+[2025-04-30T17:35:29.129Z] [INFO] Received message type: identify
+[2025-04-30T17:35:29.129Z] [SUCCESS] Client "mac-andrey" (5996) authenticated from ::1 (Darwin, arm64, darwin)
+[2025-04-30T17:41:46.180Z] [SUCCESS] http server running on port 3000
+[2025-04-30T17:41:46.182Z] [INFO] WebSocket server started
+[2025-04-30T17:41:46.284Z] [SUCCESS] http server running on port 3000
+[2025-04-30T17:41:46.285Z] [INFO] WebSocket server started
+[2025-04-30T17:41:46.334Z] [INFO] New client connected
+[2025-04-30T17:41:46.336Z] [INFO] Client identified: mac-andrey (0001)
+[2025-04-30T17:41:46.385Z] [SUCCESS] servers started successfully
+[2025-04-30T17:42:22.075Z] [SUCCESS] http server running on port 3000
+[2025-04-30T17:42:22.076Z] [INFO] WebSocket server started
+[2025-04-30T17:42:22.177Z] [SUCCESS] servers started successfully
+[2025-04-30T17:42:23.672Z] [INFO] New client connected
+[2025-04-30T17:42:23.674Z] [INFO] Client identified: mac-andrey (0001)
+[2025-04-30T17:42:36.338Z] [SUCCESS] http server running on port 3000
+[2025-04-30T17:42:36.339Z] [INFO] WebSocket server started
+[2025-04-30T17:42:36.440Z] [SUCCESS] servers started successfully
+[2025-04-30T17:42:36.598Z] [INFO] New client connected
+[2025-04-30T17:42:36.599Z] [INFO] Client identified: mac-andrey (0001)
+[2025-04-30T17:42:36.707Z] [SUCCESS] http server running on port 3000
+[2025-04-30T17:42:36.708Z] [INFO] WebSocket server started
+[2025-04-30T17:42:36.810Z] [SUCCESS] servers started successfully
+[2025-04-30T17:42:38.634Z] [INFO] New client connected
+[2025-04-30T17:42:38.636Z] [INFO] Client identified: mac-andrey (0001)
+[2025-04-30T17:43:33.504Z] [SUCCESS] http server running on port 3000
+[2025-04-30T17:43:33.505Z] [INFO] WebSocket server started
+[2025-04-30T17:43:33.607Z] [SUCCESS] servers started successfully
+[2025-04-30T17:43:35.430Z] [INFO] New client connected
+[2025-04-30T17:43:35.430Z] [INFO] Client identified: mac-andrey (0001)
+[2025-04-30T17:43:51.270Z] [SUCCESS] http server running on port 3000
+[2025-04-30T17:43:51.271Z] [INFO] WebSocket server started
+[2025-04-30T17:43:51.372Z] [SUCCESS] servers started successfully
+[2025-04-30T17:43:53.198Z] [INFO] New client connected
+[2025-04-30T17:43:53.199Z] [INFO] Client identified: mac-andrey (0001)
+[2025-04-30T17:46:25.161Z] [SUCCESS] http server running on port 3000
+[2025-04-30T17:46:25.162Z] [INFO] WebSocket server started
+[2025-04-30T17:46:25.264Z] [SUCCESS] servers started successfully
+[2025-04-30T17:46:27.094Z] [INFO] New client connected
+[2025-04-30T17:46:27.095Z] [INFO] Client identified: mac-andrey (1087)
+[2025-04-30T17:46:39.897Z] [SUCCESS] http server running on port 3000
+[2025-04-30T17:46:39.898Z] [INFO] WebSocket server started
+[2025-04-30T17:46:39.999Z] [SUCCESS] servers started successfully
+[2025-04-30T17:46:41.827Z] [INFO] New client connected
+[2025-04-30T17:46:41.829Z] [INFO] Client identified: mac-andrey (002A)
+[2025-04-30T17:47:53.632Z] [SUCCESS] http server running on port 3000
+[2025-04-30T17:47:53.634Z] [INFO] WebSocket server started
+[2025-04-30T17:47:53.734Z] [SUCCESS] servers started successfully
+[2025-04-30T17:47:55.559Z] [INFO] New client connected
+[2025-04-30T17:47:55.561Z] [INFO] Client identified: mac-andrey (0325)
+[2025-04-30T17:50:54.650Z] [SUCCESS] http server running on port 3000
+[2025-04-30T17:50:54.651Z] [INFO] WebSocket server started
+[2025-04-30T17:50:54.752Z] [SUCCESS] servers started successfully
+[2025-04-30T17:50:56.575Z] [INFO] New client connected
+[2025-04-30T17:50:56.576Z] [INFO] Client identified: mac-andrey (90FD)
+[2025-04-30T17:54:18.064Z] [SUCCESS] http server running on port 3000
+[2025-04-30T17:54:18.066Z] [INFO] WebSocket server started
+[2025-04-30T17:54:18.167Z] [SUCCESS] servers started successfully
+[2025-04-30T17:54:18.294Z] [SUCCESS] http server running on port 3000
+[2025-04-30T17:54:18.295Z] [INFO] WebSocket server started
+[2025-04-30T17:54:18.397Z] [SUCCESS] servers started successfully
+[2025-04-30T17:54:19.931Z] [INFO] New client connected
+[2025-04-30T17:54:19.933Z] [INFO] Client identified: mac-andrey (4735)
+[2025-04-30T17:56:56.199Z] [SUCCESS] http server running on port 3000
+[2025-04-30T17:56:56.201Z] [INFO] WebSocket server started
+[2025-04-30T17:56:56.301Z] [SUCCESS] servers started successfully
+[2025-04-30T17:56:58.094Z] [INFO] New client connected
+[2025-04-30T17:56:58.096Z] [INFO] Client identified: mac-andrey (C3F1)
+[2025-04-30T17:57:06.811Z] [SUCCESS] http server running on port 3000
+[2025-04-30T17:57:06.812Z] [INFO] WebSocket server started
+[2025-04-30T17:57:06.913Z] [SUCCESS] servers started successfully
+[2025-04-30T17:57:08.740Z] [INFO] New client connected
+[2025-04-30T17:57:08.742Z] [INFO] Client identified: mac-andrey (A661)
+[2025-04-30T17:58:33.757Z] [SUCCESS] http server running on port 3000
+[2025-04-30T17:58:33.758Z] [INFO] WebSocket server started
+[2025-04-30T17:58:33.859Z] [SUCCESS] servers started successfully
+[2025-04-30T17:58:35.686Z] [INFO] New client connected
+[2025-04-30T17:58:35.688Z] [INFO] Client identified: mac-andrey (295B)
+[2025-04-30T17:58:47.192Z] [SUCCESS] http server running on port 3000
+[2025-04-30T17:58:47.193Z] [INFO] WebSocket server started
+[2025-04-30T17:58:47.294Z] [SUCCESS] servers started successfully
+[2025-04-30T17:58:49.121Z] [INFO] New client connected
+[2025-04-30T17:58:49.124Z] [INFO] Client identified: mac-andrey (D72E)
+[2025-04-30T17:59:02.146Z] [SUCCESS] http server running on port 3000
+[2025-04-30T17:59:02.147Z] [INFO] WebSocket server started
+[2025-04-30T17:59:02.248Z] [SUCCESS] servers started successfully
+[2025-04-30T17:59:04.079Z] [INFO] New client connected
+[2025-04-30T17:59:04.081Z] [INFO] Client identified: mac-andrey (7B9D)
+[2025-04-30T17:59:22.595Z] [SUCCESS] http server running on port 3000
+[2025-04-30T17:59:22.597Z] [INFO] WebSocket server started
+[2025-04-30T17:59:22.698Z] [SUCCESS] servers started successfully
+[2025-04-30T17:59:24.524Z] [INFO] New client connected
+[2025-04-30T17:59:24.526Z] [INFO] Client identified: mac-andrey (45F6)
+[2025-04-30T18:00:19.934Z] [INFO] Client disconnected: mac-andrey (45F6)
+[2025-04-30T18:00:52.752Z] [SUCCESS] http server running on port 3000
+[2025-04-30T18:00:52.753Z] [INFO] WebSocket server started
+[2025-04-30T18:00:52.855Z] [SUCCESS] servers started successfully
+[2025-04-30T18:00:55.207Z] [SUCCESS] http server running on port 3000
+[2025-04-30T18:00:55.208Z] [INFO] WebSocket server started
+[2025-04-30T18:00:55.310Z] [SUCCESS] servers started successfully
+[2025-04-30T18:01:02.448Z] [SUCCESS] http server running on port 3000
+[2025-04-30T18:01:02.449Z] [INFO] WebSocket server started
+[2025-04-30T18:01:02.550Z] [SUCCESS] servers started successfully
+[2025-04-30T18:01:38.059Z] [INFO] New client connected
+[2025-04-30T18:01:38.064Z] [INFO] Client identified: mac-andrey (C764)
+[2025-04-30T18:03:18.534Z] [SUCCESS] http server running on port 3000
+[2025-04-30T18:03:18.536Z] [INFO] WebSocket server started
+[2025-04-30T18:03:18.638Z] [SUCCESS] servers started successfully
+[2025-04-30T18:03:23.465Z] [INFO] New client connected
+[2025-04-30T18:03:23.467Z] [INFO] Client identified: mac-andrey (AE0B)
+[2025-04-30T18:04:16.542Z] [INFO] Client disconnected: mac-andrey (AE0B)
+[2025-04-30T18:04:16.654Z] [SUCCESS] http server running on port 3000
+[2025-04-30T18:04:16.655Z] [INFO] WebSocket server started
+[2025-04-30T18:04:16.756Z] [SUCCESS] servers started successfully
+[2025-04-30T18:04:21.637Z] [INFO] New client connected
+[2025-04-30T18:04:21.645Z] [INFO] Client identified: mac-andrey (2FC5)
+[2025-04-30T18:04:41.783Z] [SUCCESS] http server running on port 3000
+[2025-04-30T18:04:41.784Z] [INFO] WebSocket server started
+[2025-04-30T18:04:41.884Z] [SUCCESS] servers started successfully
+[2025-04-30T18:04:46.775Z] [INFO] New client connected
+[2025-04-30T18:04:46.783Z] [INFO] Client identified: mac-andrey (0286)
+[2025-04-30T18:04:53.217Z] [SUCCESS] http server running on port 3000
+[2025-04-30T18:04:53.218Z] [INFO] WebSocket server started
+[2025-04-30T18:04:53.319Z] [SUCCESS] servers started successfully
+[2025-04-30T18:04:58.147Z] [INFO] New client connected
+[2025-04-30T18:04:58.150Z] [INFO] Client identified: mac-andrey (38C2)
+[2025-04-30T18:05:05.680Z] [SUCCESS] http server running on port 3000
+[2025-04-30T18:05:05.681Z] [INFO] WebSocket server started
+[2025-04-30T18:05:05.782Z] [SUCCESS] servers started successfully
+[2025-04-30T18:05:10.612Z] [INFO] New client connected
+[2025-04-30T18:05:10.614Z] [INFO] Client identified: mac-andrey (B583)
+[2025-04-30T18:05:33.190Z] [SUCCESS] http server running on port 3000
+[2025-04-30T18:05:33.192Z] [INFO] WebSocket server started
+[2025-04-30T18:05:33.293Z] [SUCCESS] servers started successfully
+[2025-04-30T18:05:38.177Z] [INFO] New client connected
+[2025-04-30T18:05:38.184Z] [INFO] Client identified: mac-andrey (7355)
+[2025-04-30T18:06:20.184Z] [SUCCESS] http server running on port 3000
+[2025-04-30T18:06:20.185Z] [INFO] WebSocket server started
+[2025-04-30T18:06:20.287Z] [SUCCESS] servers started successfully
+[2025-04-30T18:06:25.174Z] [INFO] New client connected
+[2025-04-30T18:06:25.183Z] [INFO] Client identified: mac-andrey (B3AE)

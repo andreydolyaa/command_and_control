@@ -18,38 +18,47 @@ export const CLI_HEADERS = {
 export const CLI_COMMANDS = {
 	LIST: {
 		cmd: "list",
+		display: "• list",
 		desc: "Display active client sessions"
 	},
 	SELECT: {
 		cmd: "select <client_id>",
+		display: "• select <client_id>",
 		desc: "Select a client to interact with"
 	},
 	INFO: {
 		cmd: "info",
+		display: "• info",
 		desc: "Retrieve comprehensive system specifications for selected client"
 	},
 	SEND: {
 		cmd: "send <message>",
+		display: "• send <message>",
 		desc: "Broadcast secure message to all authenticated clients"
 	},
 	SHELL: {
-		cmd: "shell <command>",
-		desc: "Execute shell command on selected client"
+		cmd: "shell",
+		display: "• shell",
+		desc: "Open interactive shell session with selected client"
 	},
-	CMD: {
-		cmd: "cmd <command>",
-		desc: "Alias for shell command"
+	EXIT_SHELL: {
+		cmd: "exit",
+		display: "• exit",
+		desc: "Exit current shell session"
 	},
 	UNSELECT: {
 		cmd: "back",
+		display: "• back",
 		desc: "Exit client selection mode"
 	},
 	EXIT: {
-		cmd: "exit",
+		cmd: "quit",
+		display: "• quit",
 		desc: "Terminate server session"
 	},
 	HELP: {
 		cmd: "?",
+		display: "• ?",
 		desc: "Display command interface menu"
 	}
 };

@@ -6,7 +6,7 @@ import Logger from "./logger.js";
 class Server {
 	constructor(port = 3000) {
 		this.httpServer = new HttpServer(port);
-		this.wsServer = new WSServer(this.httpServer);
+		this.wsServer = new WSServer(this.httpServer.getServer());
 		this.cli = new CLI(this.wsServer);
 	}
 

